@@ -23,6 +23,7 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.Image;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
+import sx.blah.discord.util.audit.AuditLog;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,7 +31,7 @@ import java.util.List;
 /**
  * This class defines a guild/server/clan/whatever it's called.
  */
-public interface IGuild extends IDiscordObject<IGuild> {
+public interface IGuild extends IDiscordObject<IGuild>, IAuditable{
 
 	/**
 	 * Gets the user id for the owner of this guild.
@@ -794,4 +795,6 @@ public interface IGuild extends IDiscordObject<IGuild> {
 	 * @return The count of members on the guild
 	 */
 	int getTotalMemberCount();
+
+	AuditLog fetchAuditLog();
 }

@@ -34,7 +34,7 @@ import java.util.Map;
 /**
  * Defines a text channel in a guild/server.
  */
-public interface IChannel extends IDiscordObject<IChannel> {
+public interface IChannel extends IDiscordObject<IChannel>, IAuditable {
 
 	/**
 	 * Gets the name of this channel.

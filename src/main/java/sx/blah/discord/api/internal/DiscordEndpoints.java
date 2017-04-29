@@ -60,6 +60,9 @@ public final class DiscordEndpoints {
 	 */
 	public static final String GUILDS = APIBASE+"/guilds/";
 
+	/**
+	 * Channels URL
+	 */
 	public static final String CHANNELS = APIBASE+"/channels/";
 
 	/**

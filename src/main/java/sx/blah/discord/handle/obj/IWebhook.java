@@ -25,7 +25,7 @@ import sx.blah.discord.util.RateLimitException;
 /**
  * Defines a Discord webhook for a channel.
  */
-public interface IWebhook extends IDiscordObject<IWebhook> {
+public interface IWebhook extends IDiscordObject<IWebhook>, IAuditable {
 
 	/**
 	 * Gets the guild/server this webhook belongs to.

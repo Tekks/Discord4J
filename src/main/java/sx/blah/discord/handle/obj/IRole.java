@@ -27,7 +27,7 @@ import java.util.EnumSet;
 /**
  * Represents a role.
  */
-public interface IRole extends IDiscordObject<IRole> {
+public interface IRole extends IDiscordObject<IRole>, IAuditable {
 
 	/**
 	 * Gets the position of the role, the higher the number the higher priority it has on sorting. @everyone is always -1

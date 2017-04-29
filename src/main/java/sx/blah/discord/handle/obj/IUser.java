@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * This class defines the Discord user.
  */
-public interface IUser extends IDiscordObject<IUser> {
+public interface IUser extends IDiscordObject<IUser>, IAuditable {
 
 	/**
 	 * Gets the user's username.

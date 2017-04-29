@@ -31,12 +31,16 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.IShard;
 import sx.blah.discord.api.internal.json.event.PresenceUpdateEventResponse;
 import sx.blah.discord.api.internal.json.objects.*;
+import sx.blah.discord.api.internal.json.responses.AuditLogResponse;
 import sx.blah.discord.handle.impl.obj.*;
 import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.LogMarkers;
 import sx.blah.discord.util.MessageTokenizer;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RequestBuilder;
+import sx.blah.discord.util.audit.AuditLog;
+import sx.blah.discord.util.audit.AuditLogActions;
+import sx.blah.discord.util.audit.entry.AuditLogEntry;
 import sx.blah.discord.util.cache.Cache;
 
 import javax.sound.sampled.AudioFormat;
@@ -54,6 +58,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Collection of internal Discord4J utilities.
@@ -667,6 +672,52 @@ public class DiscordUtils {
 		obj.game = response.game;
 		obj.status = response.status;
 		return getPresenceFromJSON(obj);
+	}
+
+	public static AuditLog getAuditLogFromJSON(IGuild guild, AuditLogResponse json) {
+		Cache<IUser> users = new Cache<>((DiscordClientImpl) guild.getClient(), IUser.class);
+		users.putAll(Arrays.stream(json.users).map(u -> getUserFromJSON(guild.getShard(), u)).collect(Collectors.toList()));
+
+		//System.out.println(users.values());
+
+		AuditLogEntry<?>[] entries = new AuditLogEntry[json.audit_log_entries.length];
+		for (int i = 0; i < entries.length; i++) {
+			AuditLogResponse.Entry e = json.audit_log_entries[i];
+
+			int changesLength = 0;
+			if (e.changes != null) {
+				changesLength = e.changes.length;
+			}
+
+			AuditLogEntry.Change<?>[] changes = new AuditLogEntry.Change[changesLength];
+			for (int j = 0; j < changes.length; j++) {
+				changes[j] = new AuditLogEntry.Change<>(e.changes[j].key, e.changes[j].old_value, e.changes[j].new_value); // TODO: pretty worthless
+
+			}
+
+			// TODO: DEFINITELY NOT
+			long targetID = 0;
+			try {
+				targetID = Long.parseUnsignedLong(e.target_id);
+			} catch (Exception ex) {
+				//ex.printStackTrace();
+			}
+
+			//System.out.println(e.user_id);
+
+			entries[i] = new AuditLogEntry<>(
+					Long.parseUnsignedLong(e.id),
+					AuditLogActions.get(e.action_type),
+					users.get(e.user_id),
+					targetID,
+					changes);
+		}
+
+		// TODO: This sucks a lot
+		AuditLog ret = new AuditLog(guild, users, entries);
+		for (AuditLogEntry entry : ret.getEntries()) entry.setLog(ret);
+
+		return ret;
 	}
 
 	/**

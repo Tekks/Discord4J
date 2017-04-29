@@ -29,6 +29,7 @@ import sx.blah.discord.api.internal.json.requests.ChannelCreateRequest;
 import sx.blah.discord.api.internal.json.requests.GuildEditRequest;
 import sx.blah.discord.api.internal.json.requests.MemberEditRequest;
 import sx.blah.discord.api.internal.json.requests.ReorderRolesRequest;
+import sx.blah.discord.api.internal.json.responses.AuditLogResponse;
 import sx.blah.discord.api.internal.json.responses.PruneResponse;
 import sx.blah.discord.handle.audio.IAudioManager;
 import sx.blah.discord.handle.audio.impl.AudioManager;
@@ -37,6 +38,7 @@ import sx.blah.discord.handle.impl.events.WebhookDeleteEvent;
 import sx.blah.discord.handle.impl.events.WebhookUpdateEvent;
 import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.*;
+import sx.blah.discord.util.audit.AuditLog;
 import sx.blah.discord.util.cache.Cache;
 
 import java.time.LocalDateTime;
@@ -883,6 +885,15 @@ public class Guild implements IGuild {
 
 	public void setTotalMemberCount(int totalMemberCount){
 		this.totalMemberCount = totalMemberCount;
+	}
+
+	@Override
+	public AuditLog fetchAuditLog() {
+		AuditLogResponse response = ((DiscordClientImpl) client).REQUESTS.GET.makeRequest(
+				DiscordEndpoints.GUILDS + id + "/" + "audit-logs",
+				AuditLogResponse.class);
+
+		return DiscordUtils.getAuditLogFromJSON(this, response);
 	}
 
 	@Override

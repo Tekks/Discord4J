@@ -22,7 +22,7 @@ import sx.blah.discord.api.IDiscordClient;
 /**
  * Represents an invite into a channel.
  */
-public interface IInvite {
+public interface IInvite extends IAuditable {
 
 	/**
 	 * @return The invite code for this invite.
